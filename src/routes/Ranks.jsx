@@ -1,9 +1,10 @@
+import React from "react";
 import SideBar from "../components/SideBar";
 import Table from "react-bootstrap/Table";
 import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import { TextField } from "@mui/material";
 import colors from "../colors";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import { CSVLink } from "react-csv";
@@ -24,15 +25,17 @@ import { faCircleDown as faCircleDownOutline } from "@fortawesome/free-regular-s
 import { faCircleDown as faCircleDownFill } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import ReactHelmet from "../components/ReactHelmet";
 
-function Ranks() {
+function Ranks({ changeMainCheck, clickRegion }) {
   const [loading, setLoading] = useState(false);
   const [startTime, setStartTime] = useState(new Date());
   const [endTime, setEndTime] = useState(new Date());
   const [resultUserPointList, setResultUserPointList] = useState([]);
   const [orderStandard, setOrderStandard] = useState("total");
   const [csvHover, setCsvHover] = useState(false);
-  const [clickRegion, setClickRegion] = useState("");
+
+  changeMainCheck(true);
 
   // 시간 설정
   const getDaysArray = function (start, end) {
@@ -290,7 +293,7 @@ function Ranks() {
 
   const rankingTableRow = (item) => {
     return (
-      <tr key={item.index}>
+      <tr key={item.userId}>
         <td>{item.ranking}</td>
         <td>{item.userName}</td>
         <td>{item.userGender}</td>
@@ -334,259 +337,265 @@ function Ranks() {
     return csvLine;
   };
 
-  const changeRegion = (passedRegion) => {
-    setClickRegion(passedRegion);
-  };
-
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "start",
-      }}
-    >
-      <SideBar changeRegion={changeRegion} />
+    <>
+      <ReactHelmet title={"순위 정보"} />
       <div
         style={{
           display: "flex",
-          flexDirection: "column",
-          width: "100vw",
-          height: "100vh",
-          padding: "20px",
-          overflowY: "scroll",
-          justifyContent: "start",
-          alignItems: "flex-start",
-          marginLeft: "240px",
+          justifyContent: "center",
+          alignItems: "start",
         }}
       >
         <div
           style={{
             display: "flex",
-            flexDirection: "row",
-            width: "100%",
-            height: 40,
-            justifyContent: "space-between",
+            flexDirection: "column",
+            width: "100vw",
+            height: "100vh",
+            padding: "20px",
+            overflowY: "scroll",
+            justifyContent: "start",
             alignItems: "flex-start",
-            marginBottom: 30,
+            marginLeft: "240px",
           }}
         >
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <div
-              style={{ display: "flex", marginRight: 50, alignItems: "center" }}
-            >
-              <DesktopDatePicker
-                inputFormat="yyyy-MM-dd"
-                className="my-datepicker"
-                label="시작 시간"
-                value={startTime}
-                onChange={(newValue) => {
-                  setStartTime(newValue);
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    id="datepicker-text"
-                    {...params}
-                    error={false}
-                    size="small"
-                    sx={{
-                      "& .MuiOutlinedInput-root": {
-                        "& fieldset": {
-                          border: "solid 1px",
-                          borderColor: "#000",
-                        },
-                        "&:hover fieldset": {
-                          borderColor: colors.mainColor,
-                        },
-                        "&.Mui-focused fieldset": {
-                          borderColor: colors.mainColor,
-                        },
-                      },
-                    }}
-                  />
-                )}
-              />
-              <span
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              width: "100%",
+              height: 40,
+              justifyContent: "space-between",
+              alignItems: "flex-start",
+              marginBottom: 30,
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <div
                 style={{
-                  padding: 8,
-                  width: 30,
-                  height: "100%",
+                  display: "flex",
+                  marginRight: 50,
+                  alignItems: "center",
+                }}
+              >
+                <DesktopDatePicker
+                  inputFormat="yyyy-MM-dd"
+                  className="my-datepicker"
+                  label="시작 시간"
+                  value={startTime}
+                  onChange={(newValue) => {
+                    setStartTime(newValue);
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      id="datepicker-text"
+                      {...params}
+                      error={false}
+                      size="small"
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          "& fieldset": {
+                            border: "solid 1px",
+                            borderColor: "#000",
+                          },
+                          "&:hover fieldset": {
+                            borderColor: colors.mainColor,
+                          },
+                          "&.Mui-focused fieldset": {
+                            borderColor: colors.mainColor,
+                          },
+                        },
+                      }}
+                    />
+                  )}
+                />
+                <span
+                  style={{
+                    padding: 8,
+                    width: 30,
+                    height: "100%",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  ~
+                </span>
+                <DesktopDatePicker
+                  inputFormat="yyyy-MM-dd"
+                  className="my-datepicker"
+                  label="끝 시간"
+                  value={endTime}
+                  onChange={(newValue) => {
+                    setEndTime(newValue);
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      id="datepicker-text"
+                      {...params}
+                      error={false}
+                      size="small"
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          "& fieldset": {
+                            border: "solid 1px",
+                            borderColor: "#000",
+                          },
+                          "&:hover fieldset": {
+                            borderColor: colors.mainColor,
+                          },
+                          "&.Mui-focused fieldset": {
+                            borderColor: colors.mainColor,
+                          },
+                        },
+                      }}
+                    />
+                  )}
+                />
+              </div>
+              <div
+                style={{
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
                 }}
               >
-                ~
-              </span>
-              <DesktopDatePicker
-                inputFormat="yyyy-MM-dd"
-                className="my-datepicker"
-                label="끝 시간"
-                value={endTime}
-                onChange={(newValue) => {
-                  setEndTime(newValue);
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    id="datepicker-text"
-                    {...params}
-                    error={false}
-                    size="small"
-                    sx={{
-                      "& .MuiOutlinedInput-root": {
-                        "& fieldset": {
-                          border: "solid 1px",
-                          borderColor: "#000",
-                        },
-                        "&:hover fieldset": {
-                          borderColor: colors.mainColor,
-                        },
-                        "&.Mui-focused fieldset": {
-                          borderColor: colors.mainColor,
-                        },
-                      },
-                    }}
-                  />
-                )}
-              />
+                <span
+                  style={{
+                    marginRight: 13,
+                    fontSize: 14,
+                    fontWeight: 600,
+                    color: colors.menuBlack,
+                  }}
+                >
+                  정렬 기준:
+                </span>
+                <ButtonGroup
+                  style={{
+                    height: 35,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Button
+                    id="order-button"
+                    variant="light"
+                    style={{ width: 80 }}
+                    active={orderStandard == "total" ? true : false}
+                    onClick={() => setOrderStandard("total")}
+                  >
+                    전체 점수
+                  </Button>
+                  <Button
+                    id="order-button"
+                    variant="light"
+                    style={{ width: 80 }}
+                    active={orderStandard == "step" ? true : false}
+                    onClick={() => setOrderStandard("step")}
+                  >
+                    걸음수
+                  </Button>
+                  <Button
+                    id="order-button"
+                    variant="light"
+                    style={{ width: 80 }}
+                    active={orderStandard == "diary" ? true : false}
+                    onClick={() => setOrderStandard("diary")}
+                  >
+                    일기
+                  </Button>
+                </ButtonGroup>
+              </div>
             </div>
+
+            <button
+              style={{
+                border: "none",
+                padding: 0,
+                background: "none",
+              }}
+              onMouseOver={() => setCsvHover(true)}
+              onMouseLeave={() => setCsvHover(false)}
+            >
+              <CSVLink
+                data={csvdata()}
+                filename={"오늘도청춘 회원정보"}
+                style={{ textDecoration: "none", color: colors.mainColor }}
+              >
+                <FontAwesomeIcon
+                  style={{
+                    fontSize: 24,
+                    marginRight: 8,
+                    color: colors.mainColor,
+                  }}
+                  icon={csvHover ? faCircleDownFill : faCircleDownOutline}
+                />
+                <span
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 600,
+                    color: colors.mainColor,
+                  }}
+                >
+                  CSV 다운로드
+                </span>
+              </CSVLink>
+            </button>
+          </div>
+
+          {loading ? (
+            <div style={{ width: "100%", overflowY: "scroll" }}>
+              <Table striped hover size="sm" align="center">
+                <thead>
+                  <tr>
+                    <th style={{ width: "80px" }}>순위</th>
+                    <th style={{ width: "100px" }}>이름</th>
+                    <th style={{ width: "90px" }}>성별</th>
+                    <th style={{ width: "80px" }}>나이</th>
+                    <th style={{ width: "170px" }}>핸드폰 번호</th>
+                    <th>거주 지역</th>
+                    <th style={{ width: "100px" }}>전체 점수</th>
+                    <th style={{ width: "100px" }}>걸음수</th>
+                    <th style={{ width: "100px" }}>일기</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {resultUserPointList.map((item) => rankingTableRow(item))}
+                </tbody>
+              </Table>
+            </div>
+          ) : (
             <div
               style={{
+                width: "100%",
+                height: "100%",
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
               }}
             >
-              <span
-                style={{
-                  marginRight: 13,
-                  fontSize: 14,
-                  fontWeight: 600,
-                  color: colors.menuBlack,
-                }}
-              >
-                정렬 기준:
-              </span>
-              <ButtonGroup
-                style={{
-                  height: 35,
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Button
-                  id="order-button"
-                  variant="light"
-                  style={{ width: 80 }}
-                  active={orderStandard == "total" ? true : false}
-                  onClick={() => setOrderStandard("total")}
-                >
-                  전체 점수
-                </Button>
-                <Button
-                  id="order-button"
-                  variant="light"
-                  style={{ width: 80 }}
-                  active={orderStandard == "step" ? true : false}
-                  onClick={() => setOrderStandard("step")}
-                >
-                  걸음수
-                </Button>
-                <Button
-                  id="order-button"
-                  variant="light"
-                  style={{ width: 80 }}
-                  active={orderStandard == "diary" ? true : false}
-                  onClick={() => setOrderStandard("diary")}
-                >
-                  일기
-                </Button>
-              </ButtonGroup>
-            </div>
-          </div>
-
-          <button
-            style={{
-              border: "none",
-              padding: 0,
-              background: "none",
-            }}
-            onMouseOver={() => setCsvHover(true)}
-            onMouseLeave={() => setCsvHover(false)}
-          >
-            <CSVLink
-              data={csvdata()}
-              filename={"오늘도청춘 회원정보"}
-              style={{ textDecoration: "none", color: colors.mainColor }}
-            >
-              <FontAwesomeIcon
-                style={{
-                  fontSize: 24,
-                  marginRight: 8,
-                  color: colors.mainColor,
-                }}
-                icon={csvHover ? faCircleDownFill : faCircleDownOutline}
+              <Spinner
+                style={{ marginRight: 10, width: 20, height: 20 }}
+                animation="grow"
+                variant="primary"
               />
-              <span
-                style={{
-                  fontSize: 16,
-                  fontWeight: 600,
-                  color: colors.mainColor,
-                }}
-              >
-                CSV 다운로드
-              </span>
-            </CSVLink>
-          </button>
+              <Spinner
+                style={{ marginRight: 10, width: 20, height: 20 }}
+                animation="grow"
+                variant="primary"
+              />
+              <Spinner
+                style={{ width: 20, height: 20 }}
+                animation="grow"
+                variant="primary"
+              />
+            </div>
+          )}
         </div>
-
-        {loading ? (
-          <div style={{ width: "100%", overflowY: "scroll" }}>
-            <Table striped hover size="sm" align="center">
-              <thead>
-                <tr>
-                  <th style={{ width: "80px" }}>순위</th>
-                  <th style={{ width: "100px" }}>이름</th>
-                  <th style={{ width: "90px" }}>성별</th>
-                  <th style={{ width: "80px" }}>나이</th>
-                  <th style={{ width: "170px" }}>핸드폰 번호</th>
-                  <th>거주 지역</th>
-                  <th style={{ width: "100px" }}>전체 점수</th>
-                  <th style={{ width: "100px" }}>걸음수</th>
-                  <th style={{ width: "100px" }}>일기</th>
-                </tr>
-              </thead>
-              <tbody>
-                {resultUserPointList.map((item) => rankingTableRow(item))}
-              </tbody>
-            </Table>
-          </div>
-        ) : (
-          <div
-            style={{
-              width: "100%",
-              height: "100%",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <Spinner
-              style={{ marginRight: 10 }}
-              animation="grow"
-              variant="primary"
-            />
-            <Spinner
-              style={{ marginRight: 10 }}
-              animation="grow"
-              variant="primary"
-            />
-            <Spinner animation="grow" variant="primary" />
-          </div>
-        )}
       </div>
-    </div>
+    </>
   );
 }
 

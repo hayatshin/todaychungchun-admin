@@ -2,7 +2,9 @@ import { faSadTear } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import colors from "../colors";
 
-function NotLoggedIn() {
+function NotLoggedIn({ changeMainCheck }) {
+  changeMainCheck(false);
+
   return (
     <div
       style={{

@@ -2,7 +2,13 @@ import { Form, Button, Image } from "react-bootstrap";
 import titleImage from "../assets/title_icon.png";
 import styled from "styled-components";
 import { useEffect, useState } from "react";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import {
+  browserSessionPersistence,
+  getAuth,
+  onAuthStateChanged,
+  setPersistence,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 import { firebaseAuth } from "../initFirebase";
 import { useNavigate } from "react-router-dom";
 import colors from "../colors";
@@ -39,7 +45,7 @@ const BackDiv = styled.div`
   align-items: center;
 `;
 
-function SignIn({ changeLoggedInState }) {
+function SignIn({ changeMainCheck }) {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -59,9 +65,11 @@ function SignIn({ changeLoggedInState }) {
     );
   };
 
-  useEffect(() => {
-    changeLoggedInState(false);
-  }, []);
+  changeMainCheck(false);
+
+  // useEffect(() => {
+  //   changeLoggedInState(false);
+  // }, []);
 
   const validateForm = () => {
     return email.length > 0 && password.length > 0;
@@ -93,17 +101,21 @@ function SignIn({ changeLoggedInState }) {
     } else setPasswordError({ state: false, message: "" });
 
     // 파이어베이스 auth
+
     await signInWithEmailAndPassword(firebaseAuth, email, password)
       .then((userCredential) => {
         // signed in
         const user = userCredential.user;
         navigate("/summary");
-        changeLoggedInState(true);
+
+        // const loggedAuth = getAuth();
+        // const loggedUser = loggedAuth.currentUser.uid;
+
+        // window.sessionStorage.setItem(loggedUser, "login");
       })
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
-        changeLoggedInState(false);
 
         if (
           errorCode == "auth/user-not-found" ||

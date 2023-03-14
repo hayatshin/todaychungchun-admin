@@ -7,7 +7,7 @@ import {
   CDBSidebarMenuItem,
   CDBIcon,
 } from "cdbreact";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import colors from "../colors";
 import Dropdown from "react-bootstrap/Dropdown";
@@ -258,4 +258,4 @@ function SideBar({ changeRegion }) {
   );
 }
 
-export default SideBar;
+export default React.memo(SideBar);

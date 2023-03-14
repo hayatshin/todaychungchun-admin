@@ -1,13 +1,15 @@
+import React from "react";
 import styled from "styled-components";
 import colors from "../colors";
 import SideBar from "../components/SideBar";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import emailjs from "@emailjs/browser";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import illustIcon from "../assets/illust_icon.png";
 import { faPaperPlane } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import ReactHelmet from "../components/ReactHelmet";
 
 const PartnerWrapper = styled.div`
   width: 100%;
@@ -187,7 +189,7 @@ const MailText = styled.p`
   margin-bottom: 5px;
 `;
 
-function Service() {
+function Service({ changeMainCheck, clickRegion }) {
   const navigate = useNavigate();
   const [mailError, setMailError] = useState();
   const [mailSuccess, setMainSuccess] = useState(false);
@@ -197,7 +199,8 @@ function Service() {
     formState: { errors },
   } = useForm();
   const form = useRef(null);
-  const [clickRegion, setClickRegion] = useState("");
+
+  changeMainCheck(true);
 
   const sendEmail = (e) => {
     if (form && form.current) {
@@ -225,174 +228,173 @@ function Service() {
     sendEmail(data);
   };
 
-  const changeRegion = (passedRegion) => {
-    setClickRegion(passedRegion);
-  };
-
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "start",
-      }}
-    >
-      <SideBar changeRegion={changeRegion} />
-      {!mailSuccess ? (
-        <PartnerWrapper>
-          <FormBox ref={form} onSubmit={handleSubmit(onValid)}>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                marginBottom: 50,
-                width: "100%",
-              }}
-            >
-              <img style={{ height: 45, marginRight: 30 }} src={illustIcon} />
-              <div style={{ display: "flex", flexDirection: "column" }}>
-                <NotiFont>
-                  관리자 페이지 또는 앱에 대한 오류, 개선 & 요청사항 등의
-                </NotiFont>
-                <NotiFont style={{ marginBottom: 10 }}>
-                  피드백을 보내주세요!
-                </NotiFont>
-                <NotiFont>
-                  더 좋은 서비스를 제공하는 오늘도청춘이 되겠습니다.
-                </NotiFont>
+    <>
+      <ReactHelmet title={"피드백"} />
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "start",
+        }}
+      >
+        {/* <SideBar changeRegion={changeRegion} /> */}
+        {!mailSuccess ? (
+          <PartnerWrapper>
+            <FormBox ref={form} onSubmit={handleSubmit(onValid)}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  marginBottom: 50,
+                  width: "100%",
+                }}
+              >
+                <img style={{ height: 45, marginRight: 30 }} src={illustIcon} />
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  <NotiFont>
+                    관리자 페이지 또는 앱에 대한 오류, 개선 & 요청사항 등의
+                  </NotiFont>
+                  <NotiFont style={{ marginBottom: 10 }}>
+                    피드백을 보내주세요!
+                  </NotiFont>
+                  <NotiFont>
+                    더 좋은 서비스를 제공하는 오늘도청춘이 되겠습니다.
+                  </NotiFont>
+                </div>
               </div>
-            </div>
-            <EachFormBox>
-              <ErrorMessage>
-                {mailError !== null ? mailError : null}
-              </ErrorMessage>
-              <ErrorBox>
-                <FormLabel>이름</FormLabel>
-                {errors?.name?.message ? (
-                  <ErrorMessage>* {errors?.name?.message}</ErrorMessage>
-                ) : null}
-              </ErrorBox>
-              <FormInput
-                {...register("name", { required: "이름을 입력해주세요." })}
-                type="text"
-                name="name"
-              />
-            </EachFormBox>
-            <EachFormBox>
-              <ErrorBox>
-                <FormLabel>이메일</FormLabel>
-                {errors?.email?.message ? (
-                  <ErrorMessage>* {errors?.email?.message}</ErrorMessage>
-                ) : null}
-              </ErrorBox>
-              <FormInput
-                {...register("email", {
-                  required: "이메일을 입력해주세요.",
-                  pattern:
-                    /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i,
-                })}
-                type="email"
-                name="email"
-              />
-            </EachFormBox>
-            <EachFormBox>
-              <ErrorBox>
-                <FormLabel>연락 받으실 연착처(선택사항)</FormLabel>
-                {errors?.phone_one?.message ||
-                errors?.phone_two?.message ||
-                errors?.phone_three?.message ? (
-                  <ErrorMessage>
-                    *
-                    {errors?.phone_one?.message ||
-                      errors?.phone_two?.message ||
-                      errors?.phone_three?.message}
-                  </ErrorMessage>
-                ) : null}
-              </ErrorBox>
-              <PhoneInputBox>
-                <PhoneInput
-                  {...register("phone_one")}
+              <EachFormBox>
+                <ErrorMessage>
+                  {mailError !== null ? mailError : null}
+                </ErrorMessage>
+                <ErrorBox>
+                  <FormLabel>이름</FormLabel>
+                  {errors?.name?.message ? (
+                    <ErrorMessage>* {errors?.name?.message}</ErrorMessage>
+                  ) : null}
+                </ErrorBox>
+                <FormInput
+                  {...register("name", { required: "이름을 입력해주세요." })}
                   type="text"
-                  name="phone_one"
+                  name="name"
                 />
-                <div style={{ width: 10 }}></div>
-                <FormLabel>-</FormLabel>
-                <div style={{ width: 10 }}></div>
-                <PhoneInput
-                  {...register("phone_two")}
-                  type="text"
-                  name="phone_two"
-                />
-                <div style={{ width: 10 }}></div>
-                <FormLabel>-</FormLabel>
-                <div style={{ width: 10 }}></div>
-                <PhoneInput
-                  {...register("phone_three")}
-                  type="text"
-                  name="phone_three"
-                />
-              </PhoneInputBox>
-            </EachFormBox>
-            <EachFormBox>
-              <ErrorBox>
-                <FormLabel>내용</FormLabel>
-                {errors?.message?.message ? (
-                  <ErrorMessage>* {errors?.message?.message}</ErrorMessage>
-                ) : null}
-              </ErrorBox>
-              <ContentInput
-                {...register("message", {
-                  required: "문의 내용을 입력해주세요.",
-                })}
-                name="message"
-              />
-            </EachFormBox>
-            <EachFormBox>
-              <ErrorBox>
-                <FormLabel>개인정보 수집 및 이용 동의</FormLabel>
-                {errors?.agree?.message ? (
-                  <ErrorMessage>* {errors?.agree?.message}</ErrorMessage>
-                ) : null}
-              </ErrorBox>
-              <AgreeContent>
-                <AgreeText>(필수)개인정보 수집, 이용에 대한 안내</AgreeText>
-                <AgreeText>
-                  청춘온(주)는 이용자 문의를 처리하기 위해 다음과 같이
-                  개인정보를 수집 및 이용하며, 이용자의 개인 정보를 안전하게
-                  취급하는데 최선을 다하고 있습니다.
-                </AgreeText>
-                <AgreeText>수집항목: 이름, 이메일 주소</AgreeText>
-              </AgreeContent>
-              <AgreeLabel>
-                <AgreeCheck
-                  {...register("agree", {
-                    required: "개인 정보 수집 및 이용 동의를 해주세요.",
+              </EachFormBox>
+              <EachFormBox>
+                <ErrorBox>
+                  <FormLabel>이메일</FormLabel>
+                  {errors?.email?.message ? (
+                    <ErrorMessage>* {errors?.email?.message}</ErrorMessage>
+                  ) : null}
+                </ErrorBox>
+                <FormInput
+                  {...register("email", {
+                    required: "이메일을 입력해주세요.",
+                    pattern:
+                      /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i,
                   })}
-                  type="checkbox"
-                  id="agree"
-                  name="agree"
+                  type="email"
+                  name="email"
                 />
-                개인정보 수집 및 이용에 동의합니다.
-              </AgreeLabel>
-            </EachFormBox>
-            <SubmitBtn type="submit" value="보내기" />
-          </FormBox>
-        </PartnerWrapper>
-      ) : (
-        <MailWrapper>
-          <FontAwesomeIcon
-            icon={faPaperPlane}
-            style={{
-              fontSize: 50,
-              marginBottom: 50,
-              color: colors.mainColor,
-            }}
-          />
-          <MailText>성공적으로 피드백을 전송했습니다.</MailText>
-          <MailText>빠르게 검토하겠습니다. 감사합니다!</MailText>
-        </MailWrapper>
-      )}
-    </div>
+              </EachFormBox>
+              <EachFormBox>
+                <ErrorBox>
+                  <FormLabel>연락 받으실 연착처(선택사항)</FormLabel>
+                  {errors?.phone_one?.message ||
+                  errors?.phone_two?.message ||
+                  errors?.phone_three?.message ? (
+                    <ErrorMessage>
+                      *
+                      {errors?.phone_one?.message ||
+                        errors?.phone_two?.message ||
+                        errors?.phone_three?.message}
+                    </ErrorMessage>
+                  ) : null}
+                </ErrorBox>
+                <PhoneInputBox>
+                  <PhoneInput
+                    {...register("phone_one")}
+                    type="text"
+                    name="phone_one"
+                  />
+                  <div style={{ width: 10 }}></div>
+                  <FormLabel>-</FormLabel>
+                  <div style={{ width: 10 }}></div>
+                  <PhoneInput
+                    {...register("phone_two")}
+                    type="text"
+                    name="phone_two"
+                  />
+                  <div style={{ width: 10 }}></div>
+                  <FormLabel>-</FormLabel>
+                  <div style={{ width: 10 }}></div>
+                  <PhoneInput
+                    {...register("phone_three")}
+                    type="text"
+                    name="phone_three"
+                  />
+                </PhoneInputBox>
+              </EachFormBox>
+              <EachFormBox>
+                <ErrorBox>
+                  <FormLabel>내용</FormLabel>
+                  {errors?.message?.message ? (
+                    <ErrorMessage>* {errors?.message?.message}</ErrorMessage>
+                  ) : null}
+                </ErrorBox>
+                <ContentInput
+                  {...register("message", {
+                    required: "문의 내용을 입력해주세요.",
+                  })}
+                  name="message"
+                />
+              </EachFormBox>
+              <EachFormBox>
+                <ErrorBox>
+                  <FormLabel>개인정보 수집 및 이용 동의</FormLabel>
+                  {errors?.agree?.message ? (
+                    <ErrorMessage>* {errors?.agree?.message}</ErrorMessage>
+                  ) : null}
+                </ErrorBox>
+                <AgreeContent>
+                  <AgreeText>(필수)개인정보 수집, 이용에 대한 안내</AgreeText>
+                  <AgreeText>
+                    청춘온(주)는 이용자 문의를 처리하기 위해 다음과 같이
+                    개인정보를 수집 및 이용하며, 이용자의 개인 정보를 안전하게
+                    취급하는데 최선을 다하고 있습니다.
+                  </AgreeText>
+                  <AgreeText>수집항목: 이름, 이메일 주소</AgreeText>
+                </AgreeContent>
+                <AgreeLabel>
+                  <AgreeCheck
+                    {...register("agree", {
+                      required: "개인 정보 수집 및 이용 동의를 해주세요.",
+                    })}
+                    type="checkbox"
+                    id="agree"
+                    name="agree"
+                  />
+                  개인정보 수집 및 이용에 동의합니다.
+                </AgreeLabel>
+              </EachFormBox>
+              <SubmitBtn type="submit" value="보내기" />
+            </FormBox>
+          </PartnerWrapper>
+        ) : (
+          <MailWrapper>
+            <FontAwesomeIcon
+              icon={faPaperPlane}
+              style={{
+                fontSize: 50,
+                marginBottom: 50,
+                color: colors.mainColor,
+              }}
+            />
+            <MailText>성공적으로 피드백을 전송했습니다.</MailText>
+            <MailText>빠르게 검토하겠습니다. 감사합니다!</MailText>
+          </MailWrapper>
+        )}
+      </div>
+    </>
   );
 }
 

@@ -1,4 +1,4 @@
-import async from "async";
+import React from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import SideBar from "../components/SideBar";
 import { firebaseDB } from "../initFirebase";
@@ -28,8 +28,9 @@ import { faCircleDown as faCircleDownOutline } from "@fortawesome/free-regular-s
 import { faCircleDown as faCircleDownFill } from "@fortawesome/free-solid-svg-icons";
 import { MenuItem, Select } from "@mui/material";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import ReactHelmet from "../components/ReactHelmet";
 
-function Users() {
+function Users({ changeMainCheck, clickRegion }) {
   const [loading, setLoading] = useState(false);
   const [userDataList, setUserDataList] = useState([]);
   const [userRemoveCheck, setUserRemoveCheck] = useState({
@@ -42,7 +43,9 @@ function Users() {
   const [searchOrder, setSearchOrder] = useState("userName");
   const [searchInput, setSearchInput] = useState("");
   const [originalUserDataList, setOriginalUserDataList] = useState([]);
-  const [clickRegion, setClickRegion] = useState("");
+  // const [clickRegion, setClickRegion] = useState("");
+
+  changeMainCheck(true);
 
   // csv
   const csvdata = () => {
@@ -192,319 +195,324 @@ function Users() {
     }
   };
 
-  const changeRegion = (passedRegion) => {
-    setClickRegion(passedRegion);
-  };
-
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "start",
-        position: "relative",
-        flex: 1,
-      }}
-    >
-      <SideBar changeRegion={changeRegion} />
-      {userRemoveCheck.state ? (
-        <div
-          class="userDeleteLayout"
-          style={{
-            flexGrow: 1,
-            width: "100%",
-            height: "100%",
-            position: "absolute",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: "rgba(0, 0, 0, 0.2)",
-            zIndex: 50,
-          }}
-        >
+    <>
+      <ReactHelmet title={"회원 관리"} />
+
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "center",
+          alignItems: "start",
+          position: "relative",
+          flex: 1,
+        }}
+      >
+        {userRemoveCheck.state ? (
           <div
+            class="userDeleteLayout"
             style={{
-              width: "280px",
-              height: "180px",
-              backgroundColor: "white",
-              marginLeft: "300px",
-              borderRadius: "10px",
+              flexGrow: 1,
+              width: "100%",
+              height: "100%",
+              position: "absolute",
               display: "flex",
               flexDirection: "column",
+              justifyContent: "center",
               alignItems: "center",
-              position: "relative",
-              overflow: "hidden",
+              backgroundColor: "rgba(0, 0, 0, 0.2)",
+              zIndex: 50,
             }}
           >
             <div
               style={{
-                width: "100%",
+                width: "280px",
+                height: "180px",
+                backgroundColor: "white",
+                marginLeft: "300px",
+                borderRadius: "10px",
                 display: "flex",
                 flexDirection: "column",
-                justifyContent: "center",
                 alignItems: "center",
-                flexGrow: 1,
+                position: "relative",
+                overflow: "hidden",
               }}
             >
-              <img
-                style={{
-                  width: "60px",
-                  marginBottom: "20px",
-                }}
-                src={illustIcon}
-              />
               <div
                 style={{
                   width: "100%",
                   display: "flex",
-                  flexDirection: "row",
+                  flexDirection: "column",
                   justifyContent: "center",
                   alignItems: "center",
+                  flexGrow: 1,
                 }}
               >
-                <span
-                  class="userDeleteText"
-                  style={{ fontSize: "14px", color: colors.mainColor }}
+                <img
+                  style={{
+                    width: "60px",
+                    marginBottom: "20px",
+                  }}
+                  src={illustIcon}
+                />
+                <div
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
                 >
-                  {userRemoveCheck.userName}
-                </span>
-                <span class="userDeleteText" style={{ fontSize: "14px" }}>
-                  을 정말로 삭제하시겠습니까?
-                </span>
+                  <span
+                    class="userDeleteText"
+                    style={{ fontSize: "14px", color: colors.mainColor }}
+                  >
+                    {userRemoveCheck.userName}
+                  </span>
+                  <span class="userDeleteText" style={{ fontSize: "14px" }}>
+                    을 정말로 삭제하시겠습니까?
+                  </span>
+                </div>
               </div>
-            </div>
-            <div
-              style={{
-                width: "100%",
-                height: "50px",
-                justifySelf: "flex-end",
-                alignSelf: "flex-end",
-                display: "flex",
-                flexDirection: "row",
-                borderTop: "1px solid",
-                borderColor: "rgba(0, 0, 0, 0.1)",
-              }}
-            >
               <div
                 style={{
-                  width: "50%",
+                  width: "100%",
+                  height: "50px",
+                  justifySelf: "flex-end",
+                  alignSelf: "flex-end",
                   display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  borderRight: "1px solid",
+                  flexDirection: "row",
+                  borderTop: "1px solid",
                   borderColor: "rgba(0, 0, 0, 0.1)",
                 }}
               >
-                <span
-                  class="deleteCancelButton"
+                <div
                   style={{
-                    color: colors.menuBlack,
-                    cursor: "pointer",
-                    fontSize: "14px",
+                    width: "50%",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    borderRight: "1px solid",
+                    borderColor: "rgba(0, 0, 0, 0.1)",
                   }}
-                  onClick={() =>
-                    setUserRemoveCheck({
-                      state: false,
-                      userName: "",
-                      userId: "",
-                    })
-                  }
                 >
-                  취소
-                </span>
-              </div>
-              <div
-                style={{
-                  width: "50%",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <span
-                  class="deleteConfirmButton"
+                  <span
+                    class="deleteCancelButton"
+                    style={{
+                      color: colors.menuBlack,
+                      cursor: "pointer",
+                      fontSize: "14px",
+                    }}
+                    onClick={() =>
+                      setUserRemoveCheck({
+                        state: false,
+                        userName: "",
+                        userId: "",
+                      })
+                    }
+                  >
+                    취소
+                  </span>
+                </div>
+                <div
                   style={{
-                    color: colors.mainColor,
-                    fontWeight: 600,
-                    cursor: "pointer",
-                    fontSize: "14px",
+                    width: "50%",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
                   }}
-                  onClick={userRemoveConfirmButtonClicked}
                 >
-                  삭제
-                </span>
+                  <span
+                    class="deleteConfirmButton"
+                    style={{
+                      color: colors.mainColor,
+                      fontWeight: 600,
+                      cursor: "pointer",
+                      fontSize: "14px",
+                    }}
+                    onClick={userRemoveConfirmButtonClicked}
+                  >
+                    삭제
+                  </span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      ) : null}
+        ) : null}
 
-      <div
-        style={{
-          marginLeft: "240px",
-          padding: "20px",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "start",
-          alignItems: "flex-start",
-          overflowY: "scroll",
-          width: "100vw",
-          height: "100vh",
-        }}
-      >
         <div
           style={{
-            width: "100%",
-            height: 40,
+            marginLeft: "240px",
+            padding: "20px",
             display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            marginBottom: "30px",
+            flexDirection: "column",
+            justifyContent: "start",
             alignItems: "flex-start",
+            overflowY: "scroll",
+            width: "100vw",
+            height: "100vh",
           }}
         >
-          {/* 검색 */}
-
-          <div>
-            <form id="user-searchbar" onSubmit={searchClick}>
-              <DropdownButton
-                as={ButtonGroup}
-                id="user-search-dropbox"
-                title={searchOrder == "userName" ? "회원명" : "핸드폰 번호"}
-                size="sm"
-                onSelect={(event) => setSearchOrder(event)}
-              >
-                <Dropdown.Item
-                  eventKey="userName"
-                  value="userName"
-                  id="user-search-dropbox-menu"
-                >
-                  회원명
-                </Dropdown.Item>
-                <Dropdown.Item
-                  eventKey="userPhone"
-                  value="userPhone"
-                  id="user-search-dropbox-menu"
-                >
-                  핸드폰 번호
-                </Dropdown.Item>
-              </DropdownButton>
-              <input
-                id="user-search-input"
-                type="text"
-                placeholder={
-                  searchOrder == "userName" ? "회원명 검색" : "핸드폰 번호 검색"
-                }
-                aria-label="Recipient's username"
-                aria-describedby="basic-addon2"
-                onChange={(event) => setSearchInput(event.target.value)}
-                value={searchInput}
-              />
-              <div class="input-group-append">
-                <button
-                  id="user-search-button"
-                  class="btn btn-outline-secondary"
-                  type="submit"
-                >
-                  검색
-                </button>
-              </div>
-            </form>
-          </div>
-          {/* csv */}
-          <button
-            style={{
-              border: "none",
-              padding: 0,
-              background: "none",
-            }}
-            onMouseOver={() => setCsvHover(true)}
-            onMouseLeave={() => setCsvHover(false)}
-          >
-            <CSVLink
-              data={csvdata()}
-              filename={"오늘도청춘 회원정보"}
-              style={{ textDecoration: "none", color: colors.mainColor }}
-            >
-              <FontAwesomeIcon
-                style={{
-                  fontSize: 24,
-                  marginRight: 8,
-                  color: colors.mainColor,
-                }}
-                icon={csvHover ? faCircleDownFill : faCircleDownOutline}
-              />
-              <span
-                style={{
-                  fontSize: 16,
-                  fontWeight: 600,
-                  color: colors.mainColor,
-                }}
-              >
-                CSV 다운로드
-              </span>
-            </CSVLink>
-          </button>
-        </div>
-        {loading ? (
-          <div style={{ width: "100%", overflowY: "scroll" }}>
-            <Table
-              striped
-              hover
-              size="sm"
-              style={{
-                width: "100%",
-                tableLayout: "fixed",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-              }}
-            >
-              <thead>
-                <tr>
-                  <th style={{ width: "60px" }}>#</th>
-                  <th style={{ width: "100px" }}>이름</th>
-                  <th style={{ width: "90px" }}>성별</th>
-                  <th style={{ width: "80px" }}>나이</th>
-                  <th style={{ width: "140px" }}>생년월일</th>
-                  <th style={{ width: "170px" }}>핸드폰 번호</th>
-                  <th>거주 지역</th>
-                  <th style={{ width: "70px" }}>삭제</th>
-                </tr>
-              </thead>
-              <tbody>
-                {loading
-                  ? userDataList.map((item) => UserTableRow(item))
-                  : null}
-              </tbody>
-            </Table>
-          </div>
-        ) : (
           <div
             style={{
               width: "100%",
-              height: "100%",
+              height: 40,
               display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              marginBottom: "30px",
+              alignItems: "flex-start",
             }}
           >
-            <Spinner
-              style={{ marginRight: 10 }}
-              animation="grow"
-              variant="primary"
-            />
-            <Spinner
-              style={{ marginRight: 10 }}
-              animation="grow"
-              variant="primary"
-            />
-            <Spinner animation="grow" variant="primary" />
+            {/* 검색 */}
+
+            <div>
+              <form id="user-searchbar" onSubmit={searchClick}>
+                <DropdownButton
+                  as={ButtonGroup}
+                  id="user-search-dropbox"
+                  title={searchOrder == "userName" ? "회원명" : "핸드폰 번호"}
+                  size="sm"
+                  onSelect={(event) => setSearchOrder(event)}
+                >
+                  <Dropdown.Item
+                    eventKey="userName"
+                    value="userName"
+                    id="user-search-dropbox-menu"
+                  >
+                    회원명
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    eventKey="userPhone"
+                    value="userPhone"
+                    id="user-search-dropbox-menu"
+                  >
+                    핸드폰 번호
+                  </Dropdown.Item>
+                </DropdownButton>
+                <input
+                  id="user-search-input"
+                  type="text"
+                  placeholder={
+                    searchOrder == "userName"
+                      ? "회원명 검색"
+                      : "핸드폰 번호 검색"
+                  }
+                  aria-label="Recipient's username"
+                  aria-describedby="basic-addon2"
+                  onChange={(event) => setSearchInput(event.target.value)}
+                  value={searchInput}
+                />
+                <div class="input-group-append">
+                  <button
+                    id="user-search-button"
+                    class="btn btn-outline-secondary"
+                    type="submit"
+                  >
+                    검색
+                  </button>
+                </div>
+              </form>
+            </div>
+            {/* csv */}
+            <button
+              style={{
+                border: "none",
+                padding: 0,
+                background: "none",
+              }}
+              onMouseOver={() => setCsvHover(true)}
+              onMouseLeave={() => setCsvHover(false)}
+            >
+              <CSVLink
+                data={csvdata()}
+                filename={"오늘도청춘 회원정보"}
+                style={{ textDecoration: "none", color: colors.mainColor }}
+              >
+                <FontAwesomeIcon
+                  style={{
+                    fontSize: 24,
+                    marginRight: 8,
+                    color: colors.mainColor,
+                  }}
+                  icon={csvHover ? faCircleDownFill : faCircleDownOutline}
+                />
+                <span
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 600,
+                    color: colors.mainColor,
+                  }}
+                >
+                  CSV 다운로드
+                </span>
+              </CSVLink>
+            </button>
           </div>
-        )}
+          {loading ? (
+            <div style={{ width: "100%", overflowY: "scroll" }}>
+              <Table
+                striped
+                hover
+                size="sm"
+                style={{
+                  width: "100%",
+                  tableLayout: "fixed",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                <thead>
+                  <tr>
+                    <th style={{ width: "60px" }}>#</th>
+                    <th style={{ width: "100px" }}>이름</th>
+                    <th style={{ width: "90px" }}>성별</th>
+                    <th style={{ width: "80px" }}>나이</th>
+                    <th style={{ width: "140px" }}>생년월일</th>
+                    <th style={{ width: "170px" }}>핸드폰 번호</th>
+                    <th>거주 지역</th>
+                    <th style={{ width: "70px" }}>삭제</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {loading
+                    ? userDataList.map((item) => UserTableRow(item))
+                    : null}
+                </tbody>
+              </Table>
+            </div>
+          ) : (
+            <div
+              style={{
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Spinner
+                style={{ marginRight: 10, width: 20, height: 20 }}
+                animation="grow"
+                variant="primary"
+              />
+              <Spinner
+                style={{ marginRight: 10, width: 20, height: 20 }}
+                animation="grow"
+                variant="primary"
+              />
+              <Spinner
+                style={{ width: 20, height: 20 }}
+                animation="grow"
+                variant="primary"
+              />
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 

@@ -1,7 +1,8 @@
+import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { TextField } from "@mui/material";
 import { DesktopDatePicker } from "@mui/x-date-pickers";
-import { createRef, useState } from "react";
+import { createRef, useCallback, useState } from "react";
 import { CSVLink } from "react-csv";
 import colors from "../colors";
 import SideBar from "../components/SideBar";
@@ -9,12 +10,14 @@ import { faFilePdf as PDFOutlined } from "@fortawesome/free-regular-svg-icons";
 import { faFilePdf as PDFFilled } from "@fortawesome/free-solid-svg-icons";
 import ReactApexChart from "react-apexcharts";
 import ReactToPdf from "react-to-pdf";
+import ReactHelmet from "../components/ReactHelmet";
 
-function Summary() {
+function Summary({ changeMainCheck, clickRegion }) {
   const [startTime, setStartTime] = useState(new Date());
   const [endTime, setEndTime] = useState(new Date());
   const [csvHover, setCsvHover] = useState(false);
-  const [clickRegion, setClickRegion] = useState("");
+
+  changeMainCheck(true);
 
   const pdfRef = createRef();
 
@@ -143,197 +146,241 @@ function Summary() {
     },
   };
 
-  const changeRegion = (passedRegion) => {
-    setClickRegion(passedRegion);
-  };
-
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "start",
-      }}
-    >
-      <SideBar changeRegion={changeRegion} />
+    <>
+      <ReactHelmet title={"개요"} />
       <div
         style={{
           display: "flex",
-          flexDirection: "column",
-          width: "100vw",
-          height: "100vh",
-          padding: "20px",
-          overflowY: "scroll",
-          justifyContent: "start",
-          alignItems: "flex-start",
-          marginLeft: "240px",
+          flexDirection: "row",
+          justifyContent: "center",
+          alignItems: "start",
+          position: "relative",
+          flex: 1,
         }}
       >
         <div
+          class="userDeleteLayout"
           style={{
-            display: "flex",
-            flexDirection: "row",
+            flexGrow: 1,
             width: "100%",
-            height: 40,
-            justifyContent: "space-between",
-            alignItems: "flex-start",
-            marginBottom: 30,
+            height: "100%",
+            position: "absolute",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            zIndex: 50,
           }}
         >
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <div
-              style={{ display: "flex", marginRight: 50, alignItems: "center" }}
-            >
-              <DesktopDatePicker
-                inputFormat="yyyy-MM-dd"
-                className="my-datepicker"
-                label="시작 시간"
-                value={startTime}
-                onChange={(newValue) => {
-                  setStartTime(newValue);
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    id="datepicker-text"
-                    {...params}
-                    error={false}
-                    size="small"
-                    sx={{
-                      "& .MuiOutlinedInput-root": {
-                        "& fieldset": {
-                          border: "solid 1px",
-                          borderColor: "#000",
-                        },
-                        "&:hover fieldset": {
-                          borderColor: colors.mainColor,
-                        },
-                        "&.Mui-focused fieldset": {
-                          borderColor: colors.mainColor,
-                        },
-                      },
-                    }}
-                  />
-                )}
-              />
-              <span
+          <span
+            style={{
+              marginLeft: "240px",
+              color: "white",
+              fontWeight: 600,
+              fontSize: 20,
+              marginBottom: 5,
+            }}
+          >
+            개요 페이지는 준비 중에 있습니다.
+          </span>
+          <span
+            style={{
+              marginLeft: "240px",
+              color: "white",
+              fontWeight: 600,
+              fontSize: 20,
+            }}
+          >
+            빠르게 서비스를 제공해드리겠습니다!
+          </span>
+        </div>
+
+        {/* 실제 화면 */}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            width: "100vw",
+            height: "100vh",
+            padding: "20px",
+            overflowY: "scroll",
+            justifyContent: "start",
+            alignItems: "flex-start",
+            marginLeft: "240px",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              width: "100%",
+              height: 40,
+              justifyContent: "space-between",
+              alignItems: "flex-start",
+              marginBottom: 30,
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <div
                 style={{
-                  padding: 8,
-                  width: 30,
-                  height: "100%",
+                  display: "flex",
+                  marginRight: 50,
+                  alignItems: "center",
+                }}
+              >
+                <DesktopDatePicker
+                  inputFormat="yyyy-MM-dd"
+                  className="my-datepicker"
+                  label="시작 시간"
+                  value={startTime}
+                  onChange={(newValue) => {
+                    setStartTime(newValue);
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      id="datepicker-text"
+                      {...params}
+                      error={false}
+                      size="small"
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          "& fieldset": {
+                            border: "solid 1px",
+                            borderColor: "#000",
+                          },
+                          "&:hover fieldset": {
+                            borderColor: colors.mainColor,
+                          },
+                          "&.Mui-focused fieldset": {
+                            borderColor: colors.mainColor,
+                          },
+                        },
+                      }}
+                    />
+                  )}
+                />
+                <span
+                  style={{
+                    padding: 8,
+                    width: 30,
+                    height: "100%",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  ~
+                </span>
+                <DesktopDatePicker
+                  inputFormat="yyyy-MM-dd"
+                  className="my-datepicker"
+                  label="끝 시간"
+                  value={endTime}
+                  onChange={(newValue) => {
+                    setEndTime(newValue);
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      id="datepicker-text"
+                      {...params}
+                      error={false}
+                      size="small"
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          "& fieldset": {
+                            border: "solid 1px",
+                            borderColor: "#000",
+                          },
+                          "&:hover fieldset": {
+                            borderColor: colors.mainColor,
+                          },
+                          "&.Mui-focused fieldset": {
+                            borderColor: colors.mainColor,
+                          },
+                        },
+                      }}
+                    />
+                  )}
+                />
+              </div>
+              <div
+                style={{
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
                 }}
-              >
-                ~
-              </span>
-              <DesktopDatePicker
-                inputFormat="yyyy-MM-dd"
-                className="my-datepicker"
-                label="끝 시간"
-                value={endTime}
-                onChange={(newValue) => {
-                  setEndTime(newValue);
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    id="datepicker-text"
-                    {...params}
-                    error={false}
-                    size="small"
-                    sx={{
-                      "& .MuiOutlinedInput-root": {
-                        "& fieldset": {
-                          border: "solid 1px",
-                          borderColor: "#000",
-                        },
-                        "&:hover fieldset": {
-                          borderColor: colors.mainColor,
-                        },
-                        "&.Mui-focused fieldset": {
-                          borderColor: colors.mainColor,
-                        },
-                      },
-                    }}
-                  />
-                )}
+              ></div>
+            </div>
+            <ReactToPdf
+              targetRef={pdfRef}
+              filename="오늘도청춘 개요 파일"
+              scale={0.6}
+            >
+              {({ toPdf }) => (
+                <button
+                  onClick={toPdf}
+                  style={{
+                    border: "none",
+                    padding: 0,
+                    background: "none",
+                  }}
+                  onMouseOver={() => setCsvHover(true)}
+                  onMouseLeave={() => setCsvHover(false)}
+                >
+                  <div style={{ textDecoration: "none" }}>
+                    <FontAwesomeIcon
+                      style={{
+                        fontSize: 24,
+                        marginRight: 8,
+                        color: colors.mainColor,
+                      }}
+                      icon={csvHover ? PDFFilled : PDFOutlined}
+                    />
+                    <span
+                      style={{
+                        fontSize: 16,
+                        fontWeight: 600,
+                        color: colors.mainColor,
+                      }}
+                    >
+                      PDF 다운로드
+                    </span>
+                  </div>
+                </button>
+              )}
+            </ReactToPdf>
+          </div>
+
+          {/* chart */}
+          <div id="chart-box" ref={pdfRef}>
+            <div id="top-grid-box">
+              <ReactApexChart
+                id="spline-linechart"
+                options={splineState.options}
+                series={splineState.series}
+                type="area"
+                height={250}
+              />
+              <ReactApexChart
+                id="pie-chart"
+                options={pieState.options}
+                series={pieState.series}
+                type="donut"
+                height={250}
               />
             </div>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            ></div>
-          </div>
-          <ReactToPdf
-            targetRef={pdfRef}
-            filename="오늘도청춘 개요 파일"
-            scale={0.6}
-          >
-            {({ toPdf }) => (
-              <button
-                onClick={toPdf}
-                style={{
-                  border: "none",
-                  padding: 0,
-                  background: "none",
-                }}
-                onMouseOver={() => setCsvHover(true)}
-                onMouseLeave={() => setCsvHover(false)}
-              >
-                <div style={{ textDecoration: "none" }}>
-                  <FontAwesomeIcon
-                    style={{
-                      fontSize: 24,
-                      marginRight: 8,
-                      color: colors.mainColor,
-                    }}
-                    icon={csvHover ? PDFFilled : PDFOutlined}
-                  />
-                  <span
-                    style={{
-                      fontSize: 16,
-                      fontWeight: 600,
-                      color: colors.mainColor,
-                    }}
-                  >
-                    PDF 다운로드
-                  </span>
-                </div>
-              </button>
-            )}
-          </ReactToPdf>
-        </div>
-
-        {/* chart */}
-        <div id="chart-box" ref={pdfRef}>
-          <div id="top-grid-box">
             <ReactApexChart
-              id="spline-linechart"
-              options={splineState.options}
-              series={splineState.series}
-              type="area"
-              height={250}
-            />
-            <ReactApexChart
-              id="pie-chart"
-              options={pieState.options}
-              series={pieState.series}
-              type="donut"
-              height={250}
+              options={lineColumnState.options}
+              series={lineColumnState.series}
+              type="line"
+              height={350}
             />
           </div>
-          <ReactApexChart
-            options={lineColumnState.options}
-            series={lineColumnState.series}
-            type="line"
-            height={350}
-          />
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

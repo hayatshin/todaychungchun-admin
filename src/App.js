@@ -1,57 +1,130 @@
-import logo from "./logo.svg";
+import React from "react";
 import "./App.css";
 import {
-  BrowserRouter as Router,
   Routes,
   Route,
-  BrowserRouter,
+  useNavigate,
+  HashRouter as Router,
 } from "react-router-dom";
-import { Button, Form } from "react-bootstrap";
+import { Button, Form, Spinner } from "react-bootstrap";
 import SignIn from "./routes/SignIn";
 import Summary from "./routes/Summary";
 import Users from "./routes/Users";
 import Ranks from "./routes/Ranks";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Service from "./routes/Service";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import NotLoggedIn from "./routes/NotLoggedIn";
+import SideBar from "./components/SideBar";
+import { firebaseAuth } from "./initFirebase";
 
 function App() {
+  const [init, setInit] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
-  console.log(loggedIn);
+  const [clickRegion, setClickRegion] = useState("");
+  const [mainCheck, setMainCheck] = useState(true);
 
-  // const auth = getAuth();
-  // onAuthStateChanged(auth, async (user) => {
-  //   if (user) {
-  //     setLoggedIn(true);
-  //   } else {
-  //     setLoggedIn(false);
-  //   }
-  // });
+  const changeRegion = React.useCallback((passedRegion) => {
+    setClickRegion(passedRegion);
+  }, []);
 
-  const changeLoggedInState = (loggedInState) => {
-    setLoggedIn(loggedInState);
-  };
+  const changeMainCheck = React.useCallback((passedMainBool) => {
+    setMainCheck(passedMainBool);
+  }, []);
+
+  useEffect(() => {
+    firebaseAuth.onAuthStateChanged((user) => {
+      if (user) {
+        setLoggedIn(true);
+      } else {
+        setLoggedIn(false);
+      }
+      setInit(true);
+    });
+  }, []);
 
   return (
-    <Router basename={process.env.PUBLIC_URL}>
-      <Routes>
-        <Route
-          path="/"
-          element={<SignIn changeLoggedInState={changeLoggedInState} />}
-        />
-        <Route
-          path="/summary"
-          element={loggedIn ? <Summary /> : <NotLoggedIn />}
-        />
-        <Route path="/users" element={loggedIn ? <Users /> : <NotLoggedIn />} />
-        <Route path="/ranks" element={loggedIn ? <Ranks /> : <NotLoggedIn />} />
-        <Route
-          path="/service"
-          element={loggedIn ? <Service /> : <NotLoggedIn />}
-        />
-      </Routes>
-    </Router>
+    <>
+      {init ? (
+        <Router>
+          {mainCheck ? <SideBar changeRegion={changeRegion} /> : null}
+          <Routes>
+            <Route
+              path="/"
+              element={<SignIn changeMainCheck={changeMainCheck} />}
+            />
+            <Route
+              path="/summary"
+              element={
+                loggedIn ? (
+                  <Summary
+                    changeMainCheck={changeMainCheck}
+                    clickRegion={clickRegion}
+                  />
+                ) : (
+                  <NotLoggedIn changeMainCheck={changeMainCheck} />
+                )
+              }
+            />
+            <Route
+              path="/users"
+              element={
+                loggedIn ? (
+                  <Users
+                    changeMainCheck={changeMainCheck}
+                    clickRegion={clickRegion}
+                  />
+                ) : (
+                  <NotLoggedIn changeMainCheck={changeMainCheck} />
+                )
+              }
+            />
+            <Route
+              path="/ranks"
+              element={
+                loggedIn ? (
+                  <Ranks
+                    changeMainCheck={changeMainCheck}
+                    clickRegion={clickRegion}
+                  />
+                ) : (
+                  <NotLoggedIn changeMainCheck={changeMainCheck} />
+                )
+              }
+            />
+            <Route
+              path="/service"
+              element={
+                loggedIn ? (
+                  <Service
+                    changeMainCheck={changeMainCheck}
+                    clickRegion={clickRegion}
+                  />
+                ) : (
+                  <NotLoggedIn changeMainCheck={changeMainCheck} />
+                )
+              }
+            />
+          </Routes>
+        </Router>
+      ) : (
+        <div
+          style={{
+            width: "100vw",
+            height: "100vh",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Spinner
+            style={{ marginRight: 10, width: 50, height: 50, borderWidth: 7 }}
+            animation="border"
+            variant="dark"
+          />
+        </div>
+      )}
+    </>
   );
 }
 
