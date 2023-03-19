@@ -28,7 +28,7 @@ function SideBar({ changeRegion }) {
   let currentUserId;
   const { pathname } = useLocation();
   const [userMaster, setUserMaster] = useState(false);
-  const [selectRegion, setSelectRegion] = useState();
+  const [selectRegion, setSelectRegion] = useState("");
 
   const auth = getAuth();
   onAuthStateChanged(auth, async (user) => {

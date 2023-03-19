@@ -1,7 +1,7 @@
 import React from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import SideBar from "../components/SideBar";
-import { firebaseDB } from "../initFirebase";
+import { firebaseAuth, firebaseDB } from "../initFirebase";
 import {
   collection,
   doc,
@@ -10,6 +10,7 @@ import {
   getDocs,
   query,
   deleteDoc,
+  where,
 } from "firebase/firestore";
 import Table from "react-bootstrap/Table";
 import {
@@ -27,7 +28,7 @@ import { CSVLink, CSVDownload } from "react-csv";
 import { faCircleDown as faCircleDownOutline } from "@fortawesome/free-regular-svg-icons";
 import { faCircleDown as faCircleDownFill } from "@fortawesome/free-solid-svg-icons";
 import { MenuItem, Select } from "@mui/material";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { deleteUser, getAuth, onAuthStateChanged } from "firebase/auth";
 import ReactHelmet from "../components/ReactHelmet";
 
 function Users({ changeMainCheck, clickRegion }) {
@@ -79,12 +80,45 @@ function Users({ changeMainCheck, clickRegion }) {
   };
 
   const userRemoveConfirmButtonClicked = async () => {
+    // fireauth에서 기록 삭제
+    await deleteUser(firebaseAuth, userRemoveCheck.userId)
+      .then(() => {
+        console.log("user deleted successfully");
+      })
+      .catch((error) => {
+        console.log("Error deleting user: ", error);
+      });
+
+    // userDB에서 user 기록 삭제
     await deleteDoc(doc(firebaseDB, "users", userRemoveCheck.userId));
     setUserRemoveCheck({ state: false, userName: "", userId: "" });
     setUserRemoveFinished((currentList) => [
       ...currentList,
       userRemoveCheck.userId,
     ]);
+
+    // diaryDB에서 user가 쓴 글 삭제
+    const diaryCollectionRef = collection(firebaseDB, "diary");
+    const diaryQuery = query(
+      diaryCollectionRef,
+      where("userId", "==", userRemoveCheck.userId)
+    );
+    getDocs(diaryQuery)
+      .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          const docRef = doc(diaryCollectionRef, doc.id);
+          deleteDoc(docRef)
+            .then(() => {
+              console.log("Document deleted successfully");
+            })
+            .then((error) => {
+              console.error("Error deleting document: ", error);
+            });
+        });
+      })
+      .catch((error) => {
+        console.error("Error getting documents: ", error);
+      });
   };
 
   async function getUsersData() {
