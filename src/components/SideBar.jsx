@@ -250,7 +250,7 @@ function SideBar({ changeRegion }) {
             className="sidebar-btn-wrapper"
             style={{ padding: "20px 5px", fontSize: "13px" }}
           >
-            © 청춘온
+            © 오늘도청춘
           </div>
         </CDBSidebarFooter>
       </CDBSidebar>

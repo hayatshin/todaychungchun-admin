@@ -11,6 +11,8 @@ import {
   query,
   deleteDoc,
   where,
+  addDoc,
+  serverTimestamp,
 } from "firebase/firestore";
 import Table from "react-bootstrap/Table";
 import {
@@ -80,45 +82,20 @@ function Users({ changeMainCheck, clickRegion }) {
   };
 
   const userRemoveConfirmButtonClicked = async () => {
-    // fireauth에서 기록 삭제
-    await deleteUser(firebaseAuth, userRemoveCheck.userId)
-      .then(() => {
-        console.log("user deleted successfully");
-      })
-      .catch((error) => {
-        console.log("Error deleting user: ", error);
-      });
-
     // userDB에서 user 기록 삭제
     await deleteDoc(doc(firebaseDB, "users", userRemoveCheck.userId));
+
+    // 탈퇴 기록
+    await addDoc(collection(firebaseDB, "exit"), {
+      userId: userRemoveCheck.userId,
+      timestamp: serverTimestamp(),
+    });
+
     setUserRemoveCheck({ state: false, userName: "", userId: "" });
     setUserRemoveFinished((currentList) => [
       ...currentList,
       userRemoveCheck.userId,
     ]);
-
-    // diaryDB에서 user가 쓴 글 삭제
-    const diaryCollectionRef = collection(firebaseDB, "diary");
-    const diaryQuery = query(
-      diaryCollectionRef,
-      where("userId", "==", userRemoveCheck.userId)
-    );
-    getDocs(diaryQuery)
-      .then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          const docRef = doc(diaryCollectionRef, doc.id);
-          deleteDoc(docRef)
-            .then(() => {
-              console.log("Document deleted successfully");
-            })
-            .then((error) => {
-              console.error("Error deleting document: ", error);
-            });
-        });
-      })
-      .catch((error) => {
-        console.error("Error getting documents: ", error);
-      });
   };
 
   async function getUsersData() {
@@ -142,25 +119,28 @@ function Users({ changeMainCheck, clickRegion }) {
 
           for (var i in querySnapshot.docs) {
             const doc = querySnapshot.docs[i].data();
+            const docId = doc.userId;
             const docRegion = doc.region;
             const docSmallRegion = doc.smallRegion;
             const docFullRegion = `${docRegion} ${docSmallRegion}`;
 
-            if (adminRegion == "전체") {
-              const docObject = { index: i, ...doc };
-              setUserDataList((currentList) => [...currentList, docObject]);
-              setOriginalUserDataList((currentList) => [
-                ...currentList,
-                docObject,
-              ]);
-            } else {
-              if (docFullRegion == adminFullRegion) {
+            if (docId != "default_user") {
+              if (adminRegion == "전체") {
                 const docObject = { index: i, ...doc };
                 setUserDataList((currentList) => [...currentList, docObject]);
                 setOriginalUserDataList((currentList) => [
                   ...currentList,
                   docObject,
                 ]);
+              } else {
+                if (docFullRegion == adminFullRegion) {
+                  const docObject = { index: i, ...doc };
+                  setUserDataList((currentList) => [...currentList, docObject]);
+                  setOriginalUserDataList((currentList) => [
+                    ...currentList,
+                    docObject,
+                  ]);
+                }
               }
             }
           }
@@ -184,7 +164,7 @@ function Users({ changeMainCheck, clickRegion }) {
 
     return (
       <tr key={item.index}>
-        <td>{parseInt(item.index) + 1}</td>
+        <td>{parseInt(item.index)}</td>
         <td>{item.name}</td>
         <td>{item.gender}</td>
         <td>{item.userAge}</td>

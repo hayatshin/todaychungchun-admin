@@ -49,6 +49,11 @@ function Ranks({ changeMainCheck, clickRegion }) {
     return arr;
   };
 
+  // 숫자 콤마 포맷
+  function numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+
   let dateFormatList = getDaysArray(startTime, endTime);
   let stringFormatList = dateFormatList.map((day) =>
     day.toISOString().slice(0, 10)
@@ -77,26 +82,11 @@ function Ranks({ changeMainCheck, clickRegion }) {
 
           for (var i in querySnapshot.docs) {
             const doc = querySnapshot.docs[i].data();
+            var userId = doc.userId;
             var userRegion = `${doc.region} ${doc.smallRegion}`;
 
-            if (adminRegion == "전체") {
-              const docObject = {
-                ranking: 0,
-                userId: doc.userId,
-                userName: doc.name,
-                userGender: doc.gender,
-                userAge: doc.userAge,
-                userPhone: doc.phone,
-                userRegion,
-                totalPoint: 0,
-                stepCount: 0,
-                diaryCount: 0,
-                likeCount: 0,
-                commentCount: 0,
-              };
-              userPointList.push(docObject);
-            } else {
-              if (userRegion == adminFullRegion) {
+            if (userId != "default_user") {
+              if (adminRegion == "전체") {
                 const docObject = {
                   ranking: 0,
                   userId: doc.userId,
@@ -112,6 +102,24 @@ function Ranks({ changeMainCheck, clickRegion }) {
                   commentCount: 0,
                 };
                 userPointList.push(docObject);
+              } else {
+                if (userRegion == adminFullRegion) {
+                  const docObject = {
+                    ranking: 0,
+                    userId: doc.userId,
+                    userName: doc.name,
+                    userGender: doc.gender,
+                    userAge: doc.userAge,
+                    userPhone: doc.phone,
+                    userRegion,
+                    totalPoint: 0,
+                    stepCount: 0,
+                    diaryCount: 0,
+                    likeCount: 0,
+                    commentCount: 0,
+                  };
+                  userPointList.push(docObject);
+                }
               }
             }
             // setUserPointList((currentList) => [...currentList, docObject]);
@@ -300,9 +308,9 @@ function Ranks({ changeMainCheck, clickRegion }) {
         <td>{item.userAge}</td>
         <td>{item.userPhone}</td>
         <td>{item.userRegion}</td>
-        <td>{item.totalPoint}</td>
-        <td>{item.stepCount}</td>
-        <td>{item.diaryCount}</td>
+        <td className="point-td">{numberWithCommas(item.totalPoint)}</td>
+        <td className="point-td">{numberWithCommas(item.stepCount)}</td>
+        <td className="point-td">{numberWithCommas(item.diaryCount)}</td>
       </tr>
     );
   };
@@ -556,9 +564,11 @@ function Ranks({ changeMainCheck, clickRegion }) {
                     <th style={{ width: "80px" }}>나이</th>
                     <th style={{ width: "170px" }}>핸드폰 번호</th>
                     <th>거주 지역</th>
-                    <th style={{ width: "100px" }}>전체 점수</th>
-                    <th style={{ width: "100px" }}>걸음수</th>
-                    <th style={{ width: "100px" }}>일기</th>
+                    <th style={{ width: "150px", textAlign: "end" }}>
+                      전체 점수
+                    </th>
+                    <th style={{ width: "150px", textAlign: "end" }}>걸음수</th>
+                    <th style={{ width: "100px", textAlign: "end" }}>일기</th>
                   </tr>
                 </thead>
                 <tbody>

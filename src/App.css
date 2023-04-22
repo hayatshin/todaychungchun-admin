@@ -54,6 +54,10 @@ td {
     white-space: nowrap;
 }
 
+td.point-td {
+    text-align: end;
+}
+
 tbody {
     font-size: 14px;
 }
