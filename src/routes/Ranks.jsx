@@ -39,9 +39,11 @@ function Ranks({ changeMainCheck, clickRegion }) {
 
   // 시간 설정
   const getDaysArray = function (start, end) {
+    const offset = 1000 * 60 * 60 * 9;
+
     for (
-      var arr = [], dt = new Date(start);
-      dt <= new Date(end);
+      var arr = [], dt = new Date(start + offset);
+      dt <= new Date(end + offset);
       dt.setDate(dt.getDate() + 1)
     ) {
       arr.push(new Date(dt));
@@ -83,7 +85,11 @@ function Ranks({ changeMainCheck, clickRegion }) {
           for (var i in querySnapshot.docs) {
             const doc = querySnapshot.docs[i].data();
             var userId = doc.userId;
-            var userRegion = `${doc.region} ${doc.smallRegion}`;
+            if (doc.region != undefined && doc.smallRegion != undefined) {
+              var userRegion = `${doc.region} ${doc.smallRegion}`;
+            } else {
+              var userRegion = "정보 없음";
+            }
 
             if (userId != "default_user") {
               if (adminRegion == "전체") {
@@ -279,6 +285,36 @@ function Ranks({ changeMainCheck, clickRegion }) {
           }
         }
       }
+    } else if (orderStandard == "comment") {
+      userPointList.sort((a, b) => b.commentCount - a.commentCount);
+      let rankingCount = 1;
+
+      // 순위
+      for (var i = 0; i < userPointList.length; i++) {
+        userPointList[i].ranking = rankingCount;
+
+        if (i != userPointList.length - 1) {
+          if (
+            userPointList[i].commentCount != userPointList[i + 1].commentCount
+          ) {
+            rankingCount++;
+          }
+        }
+      }
+    } else if (orderStandard == "like") {
+      userPointList.sort((a, b) => b.likeCount - a.likeCount);
+      let rankingCount = 1;
+
+      // 순위
+      for (var i = 0; i < userPointList.length; i++) {
+        userPointList[i].ranking = rankingCount;
+
+        if (i != userPointList.length - 1) {
+          if (userPointList[i].likeCount != userPointList[i + 1].likeCount) {
+            rankingCount++;
+          }
+        }
+      }
     }
     setResultUserPointList(userPointList);
     setLoading(true);
@@ -311,6 +347,8 @@ function Ranks({ changeMainCheck, clickRegion }) {
         <td className="point-td">{numberWithCommas(item.totalPoint)}</td>
         <td className="point-td">{numberWithCommas(item.stepCount)}</td>
         <td className="point-td">{numberWithCommas(item.diaryCount)}</td>
+        <td className="point-td">{numberWithCommas(item.commentCount)}</td>
+        <td className="point-td">{numberWithCommas(item.likeCount)}</td>
       </tr>
     );
   };
@@ -327,6 +365,8 @@ function Ranks({ changeMainCheck, clickRegion }) {
         "전체 점수",
         "걸음수",
         "일기",
+        "댓글",
+        "좋아요",
       ],
     ];
     resultUserPointList.forEach((item) => {
@@ -340,6 +380,8 @@ function Ranks({ changeMainCheck, clickRegion }) {
         item.totalPoint,
         item.stepCount,
         item.diaryCount,
+        item.commentCount,
+        item.likeCount,
       ]);
     });
     return csvLine;
@@ -514,6 +556,24 @@ function Ranks({ changeMainCheck, clickRegion }) {
                   >
                     일기
                   </Button>
+                  <Button
+                    id="order-button"
+                    variant="light"
+                    style={{ width: 80 }}
+                    active={orderStandard == "comment" ? true : false}
+                    onClick={() => setOrderStandard("comment")}
+                  >
+                    댓글
+                  </Button>
+                  <Button
+                    id="order-button"
+                    variant="light"
+                    style={{ width: 80 }}
+                    active={orderStandard == "like" ? true : false}
+                    onClick={() => setOrderStandard("like")}
+                  >
+                    좋아요
+                  </Button>
                 </ButtonGroup>
               </div>
             </div>
@@ -569,6 +629,8 @@ function Ranks({ changeMainCheck, clickRegion }) {
                     </th>
                     <th style={{ width: "150px", textAlign: "end" }}>걸음수</th>
                     <th style={{ width: "100px", textAlign: "end" }}>일기</th>
+                    <th style={{ width: "100px", textAlign: "end" }}>댓글</th>
+                    <th style={{ width: "100px", textAlign: "end" }}>좋아요</th>
                   </tr>
                 </thead>
                 <tbody>

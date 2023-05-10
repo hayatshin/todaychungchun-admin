@@ -116,6 +116,7 @@ function Users({ changeMainCheck, clickRegion }) {
           // 유저
           const q = query(collection(firebaseDB, "users"));
           const querySnapshot = await getDocs(q);
+          let count = 0;
 
           for (var i in querySnapshot.docs) {
             const doc = querySnapshot.docs[i].data();
@@ -126,7 +127,7 @@ function Users({ changeMainCheck, clickRegion }) {
 
             if (docId != "default_user") {
               if (adminRegion == "전체") {
-                const docObject = { index: i, ...doc };
+                const docObject = { index: count, ...doc };
                 setUserDataList((currentList) => [...currentList, docObject]);
                 setOriginalUserDataList((currentList) => [
                   ...currentList,
@@ -134,7 +135,7 @@ function Users({ changeMainCheck, clickRegion }) {
                 ]);
               } else {
                 if (docFullRegion == adminFullRegion) {
-                  const docObject = { index: i, ...doc };
+                  const docObject = { index: count, ...doc };
                   setUserDataList((currentList) => [...currentList, docObject]);
                   setOriginalUserDataList((currentList) => [
                     ...currentList,
@@ -142,6 +143,7 @@ function Users({ changeMainCheck, clickRegion }) {
                   ]);
                 }
               }
+              count++;
             }
           }
           setLoading(true);
@@ -164,7 +166,7 @@ function Users({ changeMainCheck, clickRegion }) {
 
     return (
       <tr key={item.index}>
-        <td>{parseInt(item.index)}</td>
+        <td>{parseInt(item.index) + 1}</td>
         <td>{item.name}</td>
         <td>{item.gender}</td>
         <td>{item.userAge}</td>

@@ -16,6 +16,8 @@ import {
   faChartPie,
   faRankingStar,
   faUser,
+  faGift,
+  faFaceSmile,
 } from "@fortawesome/free-solid-svg-icons";
 import { faEnvelopeOpen } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -61,10 +63,10 @@ function SideBar({ changeRegion }) {
         { region: "전체", smallRegion: "" },
         { merge: true }
       );
-    } else if (clickRegion == "경기도 수정구") {
+    } else if (clickRegion == "경기도 성남시 수정구") {
       setDoc(
         userAdminRef,
-        { region: "경기도", smallRegion: "수정구" },
+        { region: "경기도", smallRegion: "성남시 수정구" },
         { merge: true }
       );
     } else if (clickRegion == "서울특별시 광진구") {
@@ -119,16 +121,16 @@ function SideBar({ changeRegion }) {
                 전체
               </Dropdown.Item>
               <Dropdown.Item
-                onClick={() => dropDownClick("경기도 수정구")}
+                onClick={() => dropDownClick("경기도 성남시 수정구")}
                 id="region-dropdown-item"
                 key="sujeong"
                 disabled={
-                  userMaster == true || selectRegion == "경기도 수정구"
+                  userMaster == true || selectRegion == "경기도 성남시 수정구"
                     ? false
                     : true
                 }
               >
-                경기도 수정구
+                경기도 성남시 수정구
               </Dropdown.Item>
               <Dropdown.Item
                 onClick={() => dropDownClick("서울특별시 광진구")}
@@ -212,6 +214,52 @@ function SideBar({ changeRegion }) {
                 <span class="m-4">순위 정보</span>
               </CDBSidebarMenuItem>
             </NavLink>
+            <NavLink to="/mood">
+              <CDBSidebarMenuItem
+                style={{
+                  color: pathname.startsWith(`/mood`)
+                    ? colors.menuBlack
+                    : "#fff",
+                  backgroundColor: pathname.startsWith(`/mood`)
+                    ? "#fff"
+                    : colors.menuBlack,
+                  borderRadius: pathname.startsWith(`/mood`) ? "3px" : null,
+                }}
+              >
+                <FontAwesomeIcon
+                  style={{
+                    fontSize: pathname.startsWith(`/mood`) ? 25 : 20,
+                    width: pathname.startsWith(`/mood`) ? 27 : 25,
+                    transition: "font-size 5s",
+                  }}
+                  icon={faFaceSmile}
+                />
+                <span class="m-4">마음 관리</span>
+              </CDBSidebarMenuItem>
+            </NavLink>
+            <NavLink to="/event">
+              <CDBSidebarMenuItem
+                style={{
+                  color: pathname.startsWith(`/event`)
+                    ? colors.menuBlack
+                    : "#fff",
+                  backgroundColor: pathname.startsWith(`/event`)
+                    ? "#fff"
+                    : colors.menuBlack,
+                  borderRadius: pathname.startsWith(`/event`) ? "3px" : null,
+                }}
+              >
+                <FontAwesomeIcon
+                  style={{
+                    fontSize: pathname.startsWith(`/event`) ? 25 : 20,
+                    width: pathname.startsWith(`/event`) ? 27 : 25,
+                    transition: "font-size 5s",
+                  }}
+                  icon={faGift}
+                />
+                <span class="m-4">행사 관리</span>
+              </CDBSidebarMenuItem>
+            </NavLink>
             <NavLink to="/service">
               <CDBSidebarMenuItem
                 style={{
@@ -234,7 +282,6 @@ function SideBar({ changeRegion }) {
             </NavLink>
           </CDBSidebarMenu>
         </CDBSidebarContent>
-
         <CDBSidebarFooter
           style={{
             textAlign: "center",

@@ -1,22 +1,19 @@
 import React from "react";
 import "./App.css";
-import {
-  Routes,
-  Route,
-  useNavigate,
-  HashRouter as Router,
-} from "react-router-dom";
-import { Button, Form, Spinner } from "react-bootstrap";
+import { Routes, Route, HashRouter as Router } from "react-router-dom";
+import { Spinner } from "react-bootstrap";
 import SignIn from "./routes/SignIn";
 import Summary from "./routes/Summary";
 import Users from "./routes/Users";
 import Ranks from "./routes/Ranks";
 import { useEffect, useRef, useState } from "react";
 import Service from "./routes/Service";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
 import NotLoggedIn from "./routes/NotLoggedIn";
 import SideBar from "./components/SideBar";
 import { firebaseAuth } from "./initFirebase";
+import Event from "./routes/Event";
+import SubEvent from "./routes/SubEvent";
+import Mood from "./routes/Mood";
 
 function App() {
   const [init, setInit] = useState(false);
@@ -97,6 +94,45 @@ function App() {
               element={
                 loggedIn ? (
                   <Service
+                    changeMainCheck={changeMainCheck}
+                    clickRegion={clickRegion}
+                  />
+                ) : (
+                  <NotLoggedIn changeMainCheck={changeMainCheck} />
+                )
+              }
+            />
+            <Route
+              path="/mood"
+              element={
+                loggedIn ? (
+                  <Mood
+                    changeMainCheck={changeMainCheck}
+                    clickRegion={clickRegion}
+                  />
+                ) : (
+                  <NotLoggedIn changeMainCheck={changeMainCheck} />
+                )
+              }
+            />
+            <Route
+              path="/event"
+              element={
+                loggedIn ? (
+                  <Event
+                    changeMainCheck={changeMainCheck}
+                    clickRegion={clickRegion}
+                  />
+                ) : (
+                  <NotLoggedIn changeMainCheck={changeMainCheck} />
+                )
+              }
+            />
+            <Route
+              path="/event/:eventId"
+              element={
+                loggedIn ? (
+                  <SubEvent
                     changeMainCheck={changeMainCheck}
                     clickRegion={clickRegion}
                   />
