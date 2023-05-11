@@ -162,7 +162,11 @@ function Users({ changeMainCheck, clickRegion }) {
       0,
       2
     )}-${item.birthDay.slice(2, 4)} `;
-    var reformatRegion = `${item.region} ${item.smallRegion}`;
+    if (item.region != undefined && item.smallRegion != undefined) {
+      var reformatRegion = `${item.region} ${item.smallRegion}`;
+    } else {
+      var reformatRegion = "정보 없음";
+    }
 
     return (
       <tr key={item.index}>

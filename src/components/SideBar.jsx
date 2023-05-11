@@ -32,6 +32,8 @@ function SideBar({ changeRegion }) {
   const [userMaster, setUserMaster] = useState(false);
   const [selectRegion, setSelectRegion] = useState("");
 
+  useEffect(() => {}, [userMaster, selectRegion]);
+
   const auth = getAuth();
   onAuthStateChanged(auth, async (user) => {
     if (user) {

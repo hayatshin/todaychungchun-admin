@@ -100,7 +100,14 @@ function Event({ changeMainCheck, clickRegion }) {
         <td>{item.title}</td>
         <td>{item.community}</td>
         <td>{eventPeriod}</td>
-        <td>{item.state}</td>
+        <td
+          style={{
+            color: item.state == "진행" ? "blue" : "black",
+            fontWeight: item.state == "진행" ? 600 : 400,
+          }}
+        >
+          {item.state}
+        </td>
         <td style={{ display: "flex", justifyContent: "center" }}>
           <FontAwesomeIcon
             icon={faRightToBracket}
