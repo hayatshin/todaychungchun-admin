@@ -100,13 +100,17 @@ function Event({ changeMainCheck, clickRegion }) {
         <td>{item.title}</td>
         <td>{item.community}</td>
         <td>{eventPeriod}</td>
-        <td
-          style={{
-            color: item.state == "진행" ? "blue" : "black",
-            fontWeight: item.state == "진행" ? 600 : 400,
-          }}
-        >
-          {item.state}
+        <td>
+          <span
+            style={{
+              backgroundColor:
+                item.state == "진행" ? "rgba(255, 252, 127, 0.8)" : null,
+              fontWeight: item.state == "진행" ? 600 : 400,
+              color: item.state == "진행" ? `${colors.mainColor}` : "black",
+            }}
+          >
+            {item.state}
+          </span>
         </td>
         <td style={{ display: "flex", justifyContent: "center" }}>
           <FontAwesomeIcon
